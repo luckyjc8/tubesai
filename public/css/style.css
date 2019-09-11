@@ -1,0 +1,50 @@
+@font-face{
+	font-family : "StrawberryMuffins";
+	src : url(/fonts/StrawberryMuffins.ttf);
+}
+@font-face{
+	font-family : "BALRG";
+	src : url(/fonts/BALRG_0.ttf);
+}
+
+
+
+body{
+	background-image : url(/img/background.jpg);
+	background-repeat : no-repeat;
+	background-size: cover;
+	
+}
+
+.tbd-container{
+	display:inline;
+	right:2%;
+	top:5%;
+	position: absolute;
+	background-color: #485096;
+	border-radius: 25px;
+	padding:15px;
+	color : #a1a5c4;
+	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+.tbd-container h2{
+	font-family: BALRG;
+	font-size:30px;
+}
+
+.tbd-container h2 b{
+	font-size: 42px;
+	color:white;
+	text-shadow : -3px 0 black, 0 3px black, 3px 0 black, 0 -3px black;
+}
+
+.tbd-list{
+	list-style:none;
+	font-size:20px;
+	font-family: StrawberryMuffins;
+}
+
+.tbd-list li{
+	margin-top:5px;
+}
