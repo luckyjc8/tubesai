@@ -18,7 +18,6 @@
     <script src="assets/js/client_game.js">\</script>
     <script src="assets/js/base_game.js"></script>
     <script src="assets/js/othello_game.js"></script>
-    <script src="assets/js/module_updater.js"></script>
     <script src="assets/js/jquery.min.js"></script>
 </head>
 
@@ -69,7 +68,7 @@
     <script>
       client_game.initializeClientGame(
         "Tubes AI - Othello",
-        "black",
+        <?php echo('"'.(isset($_GET['black']) ? 'black' : 'white').'"');?>,
         "Giliran Anda",
         "Giliran AI",
         "Permainan Selesai",

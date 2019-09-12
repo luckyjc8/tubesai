@@ -16,7 +16,7 @@
 			<li>13517136 - Lucky Jonathan Chandra</li>
 		</ul>
 		<center>
-			<a href="othello.html"><button class="play-btn"> Play Now! </button></a>
+			<a href="othello.php"><button class="play-btn"> Play Now! </button></a>
 		</center>
 	</div>
 </body>
