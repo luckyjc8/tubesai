@@ -21,7 +21,7 @@ BaseGame.prototype.initializeGame = function(
   if (window_width >= 800 && showBiggerBoardOnWideScreens) {
     this._cellSize = 70;
   }
-  $('#game-header').css('maxWidth', this._cellSize * 8);
+  $('#game-header').css('maxWidth', this._ * 8);
   this._setupCanvas('#canvas', this._cellSize * 8, this._cellSize * 8);
   this._setupCanvas('#first_player_canvas', this._cellSize, this._cellSize);
   this._setupCanvas('#second_player_canvas', this._cellSize, this._cellSize);
