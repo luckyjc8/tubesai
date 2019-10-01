@@ -81,7 +81,7 @@ function getPossibleStateFromDirection(boardState, isWhite, row, col, dirRow, di
     var isFound = false;
     var newState = JSON.parse(JSON.stringify(boardState));
     var step = 1;
-    for (step = 1; !isIndexOutBound(row + (step * dirRow), col + (step * dirCol)); step++){
+    for (step = 1; !isIndexOutOfBound(row + (step * dirRow), col + (step * dirCol)); step++){
         if (boardState[row + (step * dirRow)][col + (step * dirCol)] == playerEnum.EMPTY || boardState[row + (step * dirRow)][col + (step * dirCol)] == playerEnum.AVAILABLE){
             break;
         }

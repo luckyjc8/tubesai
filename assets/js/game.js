@@ -3,6 +3,7 @@ var MAX_ROW = 8;
 var MAX_COL = 8;
 var MIN_ROW_INDEX = 0;
 var MIN_COL_INDEX = 0;
+var DEPTH = 5;
 
 var playerEnum = {
     BLACK: 1,
@@ -23,7 +24,6 @@ initializeGame();
 function initializeGame () {
     /* First turn: User as WHITE */
     initializeBoard();
-    setBoardEvaluationFunction(playerRole);
     drawEmptyBoard();
     drawPieces();
 }
@@ -42,12 +42,21 @@ function handleEventOnClick (elementID) {
         // Check if available(row, col) is clicked.
         if (checkAvailableMove(row, col)) {
             setAvailablePiecesToEmpty();
-            // Proceed to change WHITE to BLACK or vice versa.
-            flipPieces(playerRole, row, col);
-            updateScore();
+
+            var rootNode = new Node(null, othelloBoard);
+            generateTree(rootNode, DEPTH, false);
+            giveValueToLeaves(rootNode, evaluateScore());
+            miniMax(rootNode, DEPTH, true, -Infinity, Infinity);
+            // AI chooses this move:
+            for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
+                for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
+                    othelloBoard[row][col] = rootNode.bestNextNode[row][col];
+                }
+            }
+
             changePlayerRole();
             // Render View
-            setBoardEvaluationFunction(playerRole);
+            setAvailablePieces(playerRole);
             drawPieces();
         }
     }
@@ -75,21 +84,16 @@ function changePlayerRole () {
     }
 }
 
-function updateScore () {
-    var blackScoreTemp = 0;
-    var whiteScoreTemp = 0;
+function evaluateScore (playerRole) {
+    var scoreTemp = 0;
     for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
         for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
-            if (getBoardPiece(row, col) === playerEnum.WHITE) {
-                whiteScoreTemp++;
-            } else if (getBoardPiece(row, col) === playerEnum.BLACK) {
-                blackScoreTemp++;
+            if (getBoardPiece(row, col) === playerRole) {
+                scoreTemp++;
             }
         }
     }
-    /* set global variable */
-    whiteScore = whiteScoreTemp;
-    blackScore = blackScoreTemp;
+    return scoreTemp;
 }
 
 function checkAvailableMove (row, col) {
@@ -106,7 +110,7 @@ function setBoardPiece (row, col, piece) {
     othelloBoard[row][col] = piece;
 }
 
-function setBoardEvaluationFunction (playerRole) {
+function setAvailablePieces (playerRole) {
     var score = 0;
     for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++) {
         for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
@@ -249,20 +253,4 @@ function getIDFromAvailableDiv (id) {
 
 function isDivAvailable (id) {
     return (id.substring(0, 5) === 'child');
-}
-
-class State {
-    blackScore = null;
-    whiteScore = null;
-    playerRole = null;
-    othelloBoard = {};
-    constructor (othelloBoard, playerRole) {
-        for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
-            this.othelloBoard[row] = {};
-            for (let col = MIN_COL_INDEX; col < MAX_COL; col++ ) {
-                this.othelloBoard[row][col] = othelloBoard[row][col];
-            }
-        }
-        this.playerRole = playerRole;
-    }   
 }
