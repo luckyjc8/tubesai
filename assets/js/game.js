@@ -113,7 +113,7 @@ function setBoardEvaluationFunction (playerRole) {
     for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++) {
         for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
             score = getNumberOfFlippedPieces(playerRole, row, col);
-            if (score > 1 && getBoardPiece(row, col) !== playerRole) {
+            if (score > 1 && getBoardPiece(row, col) !== playerEnum.BLACK && getBoardPiece(row, col) !== playerEnum.WHITE) {
                 setBoardPiece(row, col, playerEnum.AVAILABLE);
             }
         }
