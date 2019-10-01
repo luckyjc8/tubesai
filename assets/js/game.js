@@ -31,13 +31,12 @@ function initializeGame () {
 // Get what element is clicked.
 window.onclick = e => {
     console.log(e.target.id);
-    console.log(othelloBoard);
     handleEventOnClick(e.target.id);
 }
 
 /* When player click on row. */
 function handleEventOnClick (elementID) {
-    if (elementID >= MIN_ROW_INDEX + 1  && elementID <= MAX_ROW * MAX_COL) {
+    if (elementID >= MIN_ROW_INDEX  && elementID <= MAX_ROW * MAX_COL) {
         let row = convertIDToRow(elementID);
         let col = convertIDToCol(elementID);
         // Check if available(row, col) is clicked.
@@ -113,7 +112,7 @@ function setBoardEvaluationFunction (playerRole) {
     for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++) {
         for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
             score = getNumberOfFlippedPieces(playerRole, row, col);
-            if (score > 1 && getBoardPiece(row, col) !== playerEnum.BLACK && getBoardPiece(row, col) !== playerEnum.WHITE) {
+            if (score > 0 && getBoardPiece(row, col) !== playerEnum.BLACK && getBoardPiece(row, col) !== playerEnum.WHITE) {
                 setBoardPiece(row, col, playerEnum.AVAILABLE);
             }
         }
@@ -140,9 +139,15 @@ function flipPieces (playerRole, row, col) {
 }
 
 function flipPiecesByDirection (playerRole, row, col, dirRow, dirCol) {
-    for (let distance = 0; distance<getNumberOfFlippedPiecesByDirection(playerRole, row, col, dirRow, dirCol); distance++) {
-        var posX = col + dirCol * (distance + 1);
-        var posY = row + dirRow * (distance + 1);
+    var limit = getNumberOfFlippedPiecesByDirection(playerRole, row, col, dirRow, dirCol);
+    for (let distance = 0; distance<limit; distance++) {
+        let posX = col + dirCol * (distance + 1);
+        let posY = row + dirRow * (distance + 1);
+        setBoardPiece(posY, posX, playerRole);
+    }
+    if (dirRow === 0 && dirCol === 0){
+        let posX = col + dirCol;
+        let posY = row + dirRow;
         setBoardPiece(posY, posX, playerRole);
     }
 }
@@ -162,11 +167,11 @@ function getNumberOfFlippedPieces (playerRole, row, col) {
 function getNumberOfFlippedPiecesByDirection (playerRole, row, col, dirRow, dirCol) {
     var numberOfFlippedPieces = 0;
     if (dirRow === 0 && dirCol === 0){
-        return 1;
+        return 0;
     }
     for (let score = 0; ; score++) {
-        var posX = col + dirCol * (score + 1);
-        var posY = row + dirRow * (score + 1);
+        let posX = col + dirCol * (score + 1);
+        let posY = row + dirRow * (score + 1);
         if (isIndexOutBound(posX, posY) || getBoardPiece(posY, posX) === playerEnum.EMPTY || getBoardPiece(posY, posX) === playerEnum.AVAILABLE) {
             break;
         }
