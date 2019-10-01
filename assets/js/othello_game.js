@@ -176,7 +176,7 @@ OthelloGame.prototype._handleClickOnCell = function(x, y) {
   this._onMovePlayedCallback(moveStr, game._moves.length);
 };
 
-OthelloGame.prototcellSizeype._makeMove = function(moveArray, player) {
+OthelloGame.prototype._makeMove = function(moveArray, player) {
   var x = moveArray[0], y = moveArray[1];
   this._playMove(x, y, player);
 
