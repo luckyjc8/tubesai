@@ -4,6 +4,7 @@ var MAX_COL = 8;
 var MIN_ROW_INDEX = 0;
 var MIN_COL_INDEX = 0;
 var DEPTH = 3;
+var RANDOM = false;
 
 var playerEnum = {
     BLACK: 1,
@@ -43,10 +44,17 @@ function handleEventOnClick (elementID) {
         let row = convertIDToRow(elementID);
         let col = convertIDToCol(elementID);
         // Check if available(row, col) is clicked.
+        if (RANDOM){
+            while(!checkAvailableMove(row, col)){
+                row = Math.floor((Math.random() * 8));
+                col = Math.floor((Math.random() * 8));
+            }    
+        }
         if (checkAvailableMove(row, col)) {
             setAvailablePiecesToEmpty();
 
             flipPieces(playerRole, row, col);
+            changePlayerRole();
             setAvailablePieces(playerRole);
             drawPieces();
 
@@ -61,6 +69,7 @@ function handleEventOnClick (elementID) {
                 }
             }
             setAvailablePiecesToEmpty();
+            changePlayerRole();
             // Render View
             setAvailablePieces(playerRole);
             drawPieces();
@@ -111,28 +120,25 @@ function getBoardPiece (row, col) {
     return othelloBoard[row][col];
 }
 
-function getBoardPieceMinMax (row, col, board) {
-    return board[row][col];
-}
-
 // Setters
 function setBoardPiece (row, col, piece) {
     othelloBoard[row][col] = piece;
 }
 
-function setBoardPieceMinMax (row, col, piece, board) {
-    board[row][col] = piece;
-}
-
 function setAvailablePieces (playerRole) {
     var score = 0;
+    var winCondition = 0;
     for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++) {
         for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
             score = getNumberOfFlippedPieces(playerRole, row, col);
+            winCondition += score;
             if (score > 0 && getBoardPiece(row, col) !== playerEnum.BLACK && getBoardPiece(row, col) !== playerEnum.WHITE) {
                 setBoardPiece(row, col, playerEnum.AVAILABLE);
             }
         }
+    }
+    if (winCondition === 0){
+        win ();
     }
 }
 
@@ -155,15 +161,6 @@ function flipPieces (playerRole, row, col) {
     }
 }
 
-function flipPiecesMinMax (board, playerRole, row, col) {
-    for (let dirRow = -1; dirRow <= 1; dirRow++ ) {
-        for (let dirCol = -1; dirCol <= 1; dirCol++ ) {
-            flipPiecesByDirectionMinMax(board, playerRole, row, col, dirRow, dirCol);
-        }
-    }
-    return board;
-}
-
 function flipPiecesByDirection (playerRole, row, col, dirRow, dirCol) {
     var limit = getNumberOfFlippedPiecesByDirection(playerRole, row, col, dirRow, dirCol);
     for (let distance = 0; distance<limit; distance++) {
@@ -175,20 +172,6 @@ function flipPiecesByDirection (playerRole, row, col, dirRow, dirCol) {
         let posX = col + dirCol;
         let posY = row + dirRow;
         setBoardPiece(posY, posX, playerRole);
-    }
-}
-
-function flipPiecesByDirectionMinMax (board, playerRole, row, col, dirRow, dirCol) {
-    var limit = getNumberOfFlippedPiecesByDirectionMinMax(board, playerRole, row, col, dirRow, dirCol);
-    for (let distance = 0; distance<limit; distance++) {
-        let posX = col + dirCol * (distance + 1);
-        let posY = row + dirRow * (distance + 1);
-        setBoardPieceMinMax(posY, posX, playerRole, board);
-    }
-    if (dirRow === 0 && dirCol === 0){
-        let posX = col + dirCol;
-        let posY = row + dirRow;
-        setBoardPieceMinMax(posY, posX, playerRole, board);
     }
 }
 
@@ -222,24 +205,7 @@ function getNumberOfFlippedPiecesByDirection (playerRole, row, col, dirRow, dirC
     return numberOfFlippedPieces;
 }
 
-function getNumberOfFlippedPiecesByDirectionMinMax (board, playerRole, row, col, dirRow, dirCol) {
-    var numberOfFlippedPieces = 0;
-    if (dirRow === 0 && dirCol === 0){
-        return 0;
-    }
-    for (let score = 0; ; score++) {
-        let posX = col + dirCol * (score + 1);
-        let posY = row + dirRow * (score + 1);
-        if (isIndexOutOfBound(posX, posY) || getBoardPieceMinMax(posY, posX, board) === playerEnum.EMPTY || getBoardPiece(posY, posX) === playerEnum.AVAILABLE) {
-            break;
-        }
-        if (getBoardPieceMinMax(posY, posX, board) === playerRole) {
-            numberOfFlippedPieces = score;
-            break;
-        }
-    }
-    return numberOfFlippedPieces;
-}
+
 
 /* VIEWS */
 // Drawing functions:
