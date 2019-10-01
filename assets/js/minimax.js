@@ -1,11 +1,116 @@
 class Node{
     value = null;
-    childNodes = null;
+    childNodes = [];
     bestNextNode = null;
+    boardState = null;
 
-    constructor (value, childNodes){
+    constructor (value, boardState){
         this.value = value;
-        this.childNodes = childNodes;
+        this.boardState = JSON.parse(JSON.stringify(boardState));
+    }
+}
+
+function giveValueToLeaves(rootNode, evaluationFunction){
+    if (rootNode.childNodes.length === 0){
+        rootNode.value = evaluationFunction(rootNode.boardState);
+    }else {
+        for (var i = 0; i < rootNode.childNodes.length; i++){
+            giveValueToLeaves(rootNode.childNodes[i], evaluationFunction);
+        }
+    }
+}
+
+function generateTree(rootNode, depth, isWhite){
+    if (depth - 1 === 0){
+        return;
+    }
+
+    generatePossibleChild(rootNode, isWhite);
+    for (var i = 0; i < rootNode.childNodes.length; i++){
+        generateTree(rootNode.childNodes[i], depth - 1, !isWhite);
+    }
+}
+
+function generatePossibleChild(node, isWhite){
+    var possibleStates = generatePossibleStates(node.boardState, isWhite);
+    for (var i = 0; i < possibleStates.length; i++){
+        node.childNodes.push(new Node(null, possibleStates[i]));
+    }
+}
+
+function generatePossibleStates(boardState, isWhite){
+    var possibleStates = [];
+    console.log(possibleStates);
+    for (var i = MIN_ROW_INDEX; i < MAX_ROW; i++){
+        for (var j = MIN_COL_INDEX; j < MAX_COL; j++){
+            if (isWhite && boardState[i][j] === playerEnum.WHITE){
+                possibleStates = possibleStates.concat(getPossibleStates(boardState, isWhite, i, j));
+                console.log(getPossibleStates(boardState, isWhite, i, j));
+                console.log(possibleStates);
+            }else if (!isWhite && boardState[i][j] === playerEnum.BLACK){
+                possibleStates = possibleStates.concat(getPossibleStates(boardState, isWhite, i, j));
+                console.log(getPossibleStates(boardState, isWhite, i, j));
+                console.log(possibleStates);
+            }
+        }
+    }
+
+    return possibleStates;
+}
+
+function getPossibleStates(boardState, isWhite, row, col){
+    var possibleStates = [];
+    for (var i = -1; i <= 1; i++){
+        for (var j = -1; j <= 1; j++){
+            var possibleState = getPossibleStateFromDirection(boardState, isWhite, row, col, i, j);
+            if (possibleState !== null){
+                possibleStates.push(possibleState);
+            }
+        }
+    }
+
+    return possibleStates;
+}
+
+function getPossibleStateFromDirection(boardState, isWhite, row, col, dirRow, dirCol){
+
+    if (dirRow === dirCol && dirRow == 0){
+        return null;
+    }
+
+    var isFound = false;
+    var newState = JSON.parse(JSON.stringify(boardState));
+    var step = 1;
+    for (step = 1; !isIndexOutBound(row + (step * dirRow), col + (step * dirCol)); step++){
+        if (boardState[row + (step * dirRow)][col + (step * dirCol)] == playerEnum.EMPTY || boardState[row + (step * dirRow)][col + (step * dirCol)] == playerEnum.AVAILABLE){
+            break;
+        }
+        if (isWhite){
+            if (boardState[row + (step * dirRow)][col + (step * dirCol)] === playerEnum.WHITE){
+                isFound = false;
+                return null;
+            }
+            newState[row + (step * dirRow)][col + (step * dirCol)] = playerEnum.WHITE;
+            isFound = true;
+        }else {
+            if (boardState[row + (step * dirRow)][col + (step * dirCol)] === playerEnum.BLACK){
+                isFound = false;
+                return null;
+            }
+            newState[row + (step * dirRow)][col + (step * dirCol)] = playerEnum.BLACK;
+            isFound = true;
+        }
+    }
+
+    if (isFound){
+        if (isWhite){
+            newState[row + (step * dirRow)][col + (step * dirCol)] = playerEnum.WHITE;
+        }else {
+            newState[row + (step * dirRow)][col + (step * dirCol)] = playerEnum.BLACK;
+        }
+        return newState;
+    }else {
+        return null;
     }
 }
 
@@ -50,38 +155,3 @@ function miniMax(node, depth, isMaximizing, alpha, beta){
         return bestValue;
     }
 }
-
-test1 = new Node(3, []);
-test2 = new Node(2, []);
-test3 = new Node(6, []);
-test4 = new Node(9, []);
-test5 = new Node(1, []);
-test6 = new Node(2, []);
-test7 = new Node(0, []);
-test8 = new Node(-1, []);
-
-test9 = new Node(null, [test1, test2]);
-test10 = new Node(null, [test3, test4]);
-test11 = new Node(null, [test5, test6]);
-test12 = new Node(null, [test7, test8]);
-
-test13 = new Node(null, [test9, test10]);
-test14 = new Node(null, [test11, test12]);
-
-test15 = new Node(null, [test13, test14]);
-
-a1 = new Node(3, []);
-a2 = new Node(12, []);
-a3 = new Node(8, []);
-a4 = new Node(2, []);
-a5 = new Node(4, []);
-a6 = new Node(6, []);
-a7 = new Node(14, []);
-a8 = new Node(5, []);
-a9 = new Node(2, []);
-
-a10 = new Node(null, [a1, a2, a3]);
-a11 = new Node(null, [a4, a5, a6]);
-a12 = new Node(null, [a7, a8, a9]);
-
-a13 = new Node(null, [a10, a11, a12]);
