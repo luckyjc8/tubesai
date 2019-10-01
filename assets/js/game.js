@@ -59,28 +59,32 @@ function handleEventOnClick (elementID) {
             setAvailablePieces(playerRole);
             drawPieces();
 
-            var rootNode = new Node(null, othelloBoard);
-            generateTree(rootNode, DEPTH, playerStart !== playerEnum.WHITE);
-            giveValueToLeaves(rootNode, evaluationFunction);
-            miniMax(rootNode, DEPTH, true, -Infinity, Infinity);
-            // AI chooses this move:
-            if (RANDOMBOT){
-                var nextRandomNode = Math.floor((Math.random() * rootNode.childNodes.length));
-            }
-            for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
-                for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
-                    if (RANDOMBOT) {
-                        othelloBoard[row][col]= rootNode.childNodes[nextRandomNode].boardState[row][col];
-                    } else {
-                        othelloBoard[row][col] = rootNode.childNodes[rootNode.bestNextNode].boardState[row][col];
+
+            setTimeout(function() {
+                var rootNode = new Node(null, othelloBoard);
+                generateTree(rootNode, DEPTH, playerStart !== playerEnum.WHITE);
+                giveValueToLeaves(rootNode, evaluationFunction);
+                miniMax(rootNode, DEPTH, true, -Infinity, Infinity);
+                // AI chooses this move:
+                if (RANDOMBOT){
+                    var nextRandomNode = Math.floor((Math.random() * rootNode.childNodes.length));
+                }
+                for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
+                    for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
+                        if (RANDOMBOT) {
+                            othelloBoard[row][col]= rootNode.childNodes[nextRandomNode].boardState[row][col];
+                        } else {
+                            othelloBoard[row][col] = rootNode.childNodes[rootNode.bestNextNode].boardState[row][col];
+                        }
                     }
                 }
-            }
-            setAvailablePiecesToEmpty();
-            changePlayerRole();
-            // Render View
-            setAvailablePieces(playerRole);
-            drawPieces();
+                setAvailablePiecesToEmpty();
+                changePlayerRole();
+                // Render View
+                setAvailablePieces(playerRole);
+                drawPieces();
+            }, 1000);
+            
         }
     }
 }
