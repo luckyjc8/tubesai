@@ -129,9 +129,6 @@ function setAvailablePiecesMinMax (board, playerRole) {
             if (score > 0 && getBoardPieceMinMax(row, col, board) !== playerEnum.BLACK && getBoardPieceMinMax(row, col, board) !== playerEnum.WHITE) {
                 setBoardPieceMinMax(row, col, playerEnum.AVAILABLE, board);
             }
-            else{
-                gamewin();
-            }
         }
     }
 }

@@ -137,9 +137,6 @@ function setAvailablePieces (playerRole) {
             }
         }
     }
-    if (winCondition === 0){
-        win ();
-    }
 }
 
 function setAvailablePiecesToEmpty () {
