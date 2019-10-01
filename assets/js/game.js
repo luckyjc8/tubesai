@@ -53,7 +53,6 @@ function handleEventOnClick (elementID) {
     }
 }
 
-
 function initializeBoard () {
     for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
         othelloBoard[row] = {};
@@ -152,7 +151,6 @@ function flipPiecesByDirection (playerRole, row, col, dirRow, dirCol) {
     }
 }
 
-
 // playerRole = WHITE, BLACK
 function getNumberOfFlippedPieces (playerRole, row, col) {
     var count = 0;
@@ -172,7 +170,7 @@ function getNumberOfFlippedPiecesByDirection (playerRole, row, col, dirRow, dirC
     for (let score = 0; ; score++) {
         let posX = col + dirCol * (score + 1);
         let posY = row + dirRow * (score + 1);
-        if (isIndexOutBound(posX, posY) || getBoardPiece(posY, posX) === playerEnum.EMPTY || getBoardPiece(posY, posX) === playerEnum.AVAILABLE) {
+        if (isIndexOutOfBound(posX, posY) || getBoardPiece(posY, posX) === playerEnum.EMPTY || getBoardPiece(posY, posX) === playerEnum.AVAILABLE) {
             break;
         }
         if (getBoardPiece(posY, posX) === playerRole) {
@@ -220,10 +218,12 @@ function drawPieceByName (row, col, className) {
     var id = convertToID(row, col);
     // Reset div element:
     document.getElementById(id).innerHTML = '';
-    var div = document.createElement('div');
-    div.className = className;
-    // Then append new div element (WHITE, BLACK, AVAILABLE)
-    document.getElementById(id).appendChild(div);
+    if (className !== '') {
+        var div = document.createElement('div');
+        div.className = className;
+        // Then append new div element (WHITE, BLACK, AVAILABLE)
+        document.getElementById(id).appendChild(div);
+    }
 }
 
 // Utils for rendering to frontend.
@@ -231,7 +231,7 @@ function convertToID (row, col) {
     return (row - MIN_ROW_INDEX) * MAX_ROW + col;
 }
 
-function isIndexOutBound (posX, posY) {
+function isIndexOutOfBound (posX, posY) {
     return (posX < MIN_COL_INDEX || posY < MIN_ROW_INDEX || posX >= MAX_COL || posY >= MAX_ROW);
 }
 
@@ -249,4 +249,20 @@ function getIDFromAvailableDiv (id) {
 
 function isDivAvailable (id) {
     return (id.substring(0, 5) === 'child');
+}
+
+class State {
+    blackScore = null;
+    whiteScore = null;
+    playerRole = null;
+    othelloBoard = {};
+    constructor (othelloBoard, playerRole) {
+        for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
+            this.othelloBoard[row] = {};
+            for (let col = MIN_COL_INDEX; col < MAX_COL; col++ ) {
+                this.othelloBoard[row][col] = othelloBoard[row][col];
+            }
+        }
+        this.playerRole = playerRole;
+    }   
 }
