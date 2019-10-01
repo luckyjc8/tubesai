@@ -61,7 +61,6 @@ function handleEventOnClick (elementID) {
                 }
             }
             setAvailablePiecesToEmpty();
-
             // Render View
             setAvailablePieces(playerRole);
             drawPieces();
@@ -112,9 +111,17 @@ function getBoardPiece (row, col) {
     return othelloBoard[row][col];
 }
 
+function getBoardPieceMinMax (row, col, board) {
+    return board[row][col];
+}
+
 // Setters
 function setBoardPiece (row, col, piece) {
     othelloBoard[row][col] = piece;
+}
+
+function setBoardPieceMinMax (row, col, piece, board) {
+    board[row][col] = piece;
 }
 
 function setAvailablePieces (playerRole) {
@@ -148,6 +155,15 @@ function flipPieces (playerRole, row, col) {
     }
 }
 
+function flipPiecesMinMax (board, playerRole, row, col) {
+    for (let dirRow = -1; dirRow <= 1; dirRow++ ) {
+        for (let dirCol = -1; dirCol <= 1; dirCol++ ) {
+            flipPiecesByDirectionMinMax(board, playerRole, row, col, dirRow, dirCol);
+        }
+    }
+    return board;
+}
+
 function flipPiecesByDirection (playerRole, row, col, dirRow, dirCol) {
     var limit = getNumberOfFlippedPiecesByDirection(playerRole, row, col, dirRow, dirCol);
     for (let distance = 0; distance<limit; distance++) {
@@ -159,6 +175,20 @@ function flipPiecesByDirection (playerRole, row, col, dirRow, dirCol) {
         let posX = col + dirCol;
         let posY = row + dirRow;
         setBoardPiece(posY, posX, playerRole);
+    }
+}
+
+function flipPiecesByDirectionMinMax (board, playerRole, row, col, dirRow, dirCol) {
+    var limit = getNumberOfFlippedPiecesByDirectionMinMax(board, playerRole, row, col, dirRow, dirCol);
+    for (let distance = 0; distance<limit; distance++) {
+        let posX = col + dirCol * (distance + 1);
+        let posY = row + dirRow * (distance + 1);
+        setBoardPieceMinMax(posY, posX, playerRole, board);
+    }
+    if (dirRow === 0 && dirCol === 0){
+        let posX = col + dirCol;
+        let posY = row + dirRow;
+        setBoardPieceMinMax(posY, posX, playerRole, board);
     }
 }
 
@@ -185,6 +215,25 @@ function getNumberOfFlippedPiecesByDirection (playerRole, row, col, dirRow, dirC
             break;
         }
         if (getBoardPiece(posY, posX) === playerRole) {
+            numberOfFlippedPieces = score;
+            break;
+        }
+    }
+    return numberOfFlippedPieces;
+}
+
+function getNumberOfFlippedPiecesByDirectionMinMax (board, playerRole, row, col, dirRow, dirCol) {
+    var numberOfFlippedPieces = 0;
+    if (dirRow === 0 && dirCol === 0){
+        return 0;
+    }
+    for (let score = 0; ; score++) {
+        let posX = col + dirCol * (score + 1);
+        let posY = row + dirRow * (score + 1);
+        if (isIndexOutOfBound(posX, posY) || getBoardPieceMinMax(posY, posX, board) === playerEnum.EMPTY || getBoardPiece(posY, posX) === playerEnum.AVAILABLE) {
+            break;
+        }
+        if (getBoardPieceMinMax(posY, posX, board) === playerRole) {
             numberOfFlippedPieces = score;
             break;
         }

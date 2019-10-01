@@ -4,7 +4,7 @@ class Node{
     bestNextNode = null;
     boardState = null;
 
-    constructor (value, boardState){
+    constructor (value, boardState) {
         this.value = value;
         this.boardState = JSON.parse(JSON.stringify(boardState));
     }
@@ -13,7 +13,7 @@ class Node{
 function giveValueToLeaves(rootNode, evaluationFunction){
     if (rootNode.childNodes.length === 0){
         rootNode.value = evaluationFunction(rootNode.boardState);
-    }else {
+    } else {
         for (var i = 0; i < rootNode.childNodes.length; i++){
             giveValueToLeaves(rootNode.childNodes[i], evaluationFunction);
         }
@@ -42,71 +42,71 @@ function generatePossibleStates(boardState, isWhite){
     for (var i = MIN_ROW_INDEX; i < MAX_ROW; i++){
         for (var j = MIN_COL_INDEX; j < MAX_COL; j++){
             if (isWhite && boardState[i][j] === playerEnum.WHITE){
-                possibleStates = possibleStates.concat(getPossibleStates(boardState, isWhite, i, j));
+                possibleStates = possibleStates.concat(flipPiecesMinMax(boardState, playerEnum.WHITE, i, j));
             }else if (!isWhite && boardState[i][j] === playerEnum.BLACK){
-                possibleStates = possibleStates.concat(getPossibleStates(boardState, isWhite, i, j));
+                possibleStates = possibleStates.concat(flipPiecesMinMax(boardState, playerEnum.BLACK, i, j));
             }
         }
     }
-
     return possibleStates;
 }
 
-function getPossibleStates(boardState, isWhite, row, col){
-    var possibleStates = [];
-    for (var i = -1; i <= 1; i++){
-        for (var j = -1; j <= 1; j++){
-            var possibleState = getPossibleStateFromDirection(boardState, isWhite, row, col, i, j);
-            if (possibleState !== null){
-                possibleStates.push(possibleState);
-            }
-        }
-    }
+// function getPossibleStates(boardState, isWhite, row, col){
+//     var possibleStates = [];
+//     // for (var i = -1; i <= 1; i++){
+//     //     for (var j = -1; j <= 1; j++){
+//     //         var possibleState = getPossibleStateFromDirection(boardState, isWhite, row, col);
+//     //         if (possibleState !== null){
+//     //             possibleStates.push(possibleState);
+//     //         }
+//     //     }
+//     // }
 
-    return possibleStates;
-}
+//     return possibleStates;
+// }
 
-function getPossibleStateFromDirection(boardState, isWhite, row, col, dirRow, dirCol){
+// function getPossibleStateFromDirection(boardState, isWhite, row, col){
+//     var isFound = false;
+//     var newState = JSON.parse(JSON.stringify(boardState));
+//     var step = 1;
+//     var playerRole = playerEnum.BLACK;
+//     if (isWhite) {
+//         var playerRole = playerEnum.WHITE;
+//     }
+//     flipPiecesByDirection(playerRole, row, col, dirRow, dirCol)
 
-    if (dirRow === dirCol && dirRow == 0){
-        return null;
-    }
+//     for (step = 1; !isIndexOutOfBound(row + (step * dirRow), col + (step * dirCol)); step++){
+//         if (boardState[row + (step * dirRow)][col + (step * dirCol)] == playerEnum.EMPTY || boardState[row + (step * dirRow)][col + (step * dirCol)] == playerEnum.AVAILABLE){
+//             break;
+//         }
+//         if (isWhite){
+//             if (boardState[row + (step * dirRow)][col + (step * dirCol)] === playerEnum.WHITE){
+//                 isFound = false;
+//                 return null;
+//             }
+//             newState[row + (step * dirRow)][col + (step * dirCol)] = playerEnum.WHITE;
+//             isFound = true;
+//         }else {
+//             if (boardState[row + (step * dirRow)][col + (step * dirCol)] === playerEnum.BLACK){
+//                 isFound = false;
+//                 return null;
+//             }
+//             newState[row + (step * dirRow)][col + (step * dirCol)] = playerEnum.BLACK;
+//             isFound = true;
+//         }
+//     }
 
-    var isFound = false;
-    var newState = JSON.parse(JSON.stringify(boardState));
-    var step = 1;
-    for (step = 1; !isIndexOutOfBound(row + (step * dirRow), col + (step * dirCol)); step++){
-        if (boardState[row + (step * dirRow)][col + (step * dirCol)] == playerEnum.EMPTY || boardState[row + (step * dirRow)][col + (step * dirCol)] == playerEnum.AVAILABLE){
-            break;
-        }
-        if (isWhite){
-            if (boardState[row + (step * dirRow)][col + (step * dirCol)] === playerEnum.WHITE){
-                isFound = false;
-                return null;
-            }
-            newState[row + (step * dirRow)][col + (step * dirCol)] = playerEnum.WHITE;
-            isFound = true;
-        }else {
-            if (boardState[row + (step * dirRow)][col + (step * dirCol)] === playerEnum.BLACK){
-                isFound = false;
-                return null;
-            }
-            newState[row + (step * dirRow)][col + (step * dirCol)] = playerEnum.BLACK;
-            isFound = true;
-        }
-    }
-
-    if (isFound){
-        if (isWhite){
-            newState[row + (step * dirRow)][col + (step * dirCol)] = playerEnum.WHITE;
-        }else {
-            newState[row + (step * dirRow)][col + (step * dirCol)] = playerEnum.BLACK;
-        }
-        return newState;
-    }else {
-        return null;
-    }
-}
+//     if (isFound){
+//         if (isWhite){
+//             newState[row + (step * dirRow)][col + (step * dirCol)] = playerEnum.WHITE;
+//         }else {
+//             newState[row + (step * dirRow)][col + (step * dirCol)] = playerEnum.BLACK;
+//         }
+//         return newState;
+//     }else {
+//         return null;
+//     }
+// }
 
 function miniMax(node, depth, isMaximizing, alpha, beta){
     if (depth - 1 === 0){
