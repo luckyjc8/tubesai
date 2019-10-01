@@ -3,7 +3,7 @@ var MAX_ROW = 8;
 var MAX_COL = 8;
 var MIN_ROW_INDEX = 0;
 var MIN_COL_INDEX = 0;
-var DEPTH = 5;
+var DEPTH = 3;
 
 var playerEnum = {
     BLACK: 1,
@@ -14,7 +14,7 @@ var playerEnum = {
 
 var blackScore = 2;
 var whiteScore = 2;
-var playerStart = playerEnum.WHITE;
+var playerStart = playerEnum.BLACK;
 var playerRole = playerStart;
 var othelloBoard = {};
 
@@ -36,6 +36,7 @@ window.onclick = e => {
     handleEventOnClick(e.target.id);
 }
 
+
 /* When player click on row. */
 function handleEventOnClick (elementID) {
     if (elementID >= MIN_ROW_INDEX  && elementID <= MAX_ROW * MAX_COL) {
@@ -45,18 +46,22 @@ function handleEventOnClick (elementID) {
         if (checkAvailableMove(row, col)) {
             setAvailablePiecesToEmpty();
 
+            flipPieces(playerRole, row, col);
+            setAvailablePieces(playerRole);
+            drawPieces();
+
             var rootNode = new Node(null, othelloBoard);
-            generateTree(rootNode, DEPTH, false);
-            giveValueToLeaves(rootNode, evaluateScore());
+            generateTree(rootNode, DEPTH, playerStart !== playerEnum.WHITE);
+            giveValueToLeaves(rootNode, evaluationFunction);
             miniMax(rootNode, DEPTH, true, -Infinity, Infinity);
             // AI chooses this move:
             for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
                 for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
-                    othelloBoard[row][col] = rootNode.bestNextNode[row][col];
+                    othelloBoard[row][col] = rootNode.childNodes[rootNode.bestNextNode].boardState[row][col];
                 }
             }
+            setAvailablePiecesToEmpty();
 
-            changePlayerRole();
             // Render View
             setAvailablePieces(playerRole);
             drawPieces();
@@ -86,7 +91,7 @@ function changePlayerRole () {
     }
 }
 
-evaluationFunction = function (othelloBoard) {
+function evaluationFunction (othelloBoard) {
     var scoreTemp = 0;
     for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
         for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {

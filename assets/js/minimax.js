@@ -24,7 +24,6 @@ function generateTree(rootNode, depth, isWhite){
     if (depth - 1 === 0){
         return;
     }
-
     generatePossibleChild(rootNode, isWhite);
     for (var i = 0; i < rootNode.childNodes.length; i++){
         generateTree(rootNode.childNodes[i], depth - 1, !isWhite);
@@ -40,17 +39,12 @@ function generatePossibleChild(node, isWhite){
 
 function generatePossibleStates(boardState, isWhite){
     var possibleStates = [];
-    console.log(possibleStates);
     for (var i = MIN_ROW_INDEX; i < MAX_ROW; i++){
         for (var j = MIN_COL_INDEX; j < MAX_COL; j++){
             if (isWhite && boardState[i][j] === playerEnum.WHITE){
                 possibleStates = possibleStates.concat(getPossibleStates(boardState, isWhite, i, j));
-                console.log(getPossibleStates(boardState, isWhite, i, j));
-                console.log(possibleStates);
             }else if (!isWhite && boardState[i][j] === playerEnum.BLACK){
                 possibleStates = possibleStates.concat(getPossibleStates(boardState, isWhite, i, j));
-                console.log(getPossibleStates(boardState, isWhite, i, j));
-                console.log(possibleStates);
             }
         }
     }
