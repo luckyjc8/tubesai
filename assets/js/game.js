@@ -13,7 +13,7 @@ var playerEnum = {
 
 var blackScore = 2;
 var whiteScore = 2;
-var playerRole = playerEnum.WHITE;
+var playerRole = playerEnum.BLACK;
 var othelloBoard = {};
 
 /* Main program */
@@ -48,8 +48,8 @@ function handleEventOnClick (elementID) {
             updateScore();
             changePlayerRole();
             // Render View
-            drawPieces();
             setBoardEvaluationFunction(playerRole);
+            drawPieces();
         }
     }
 }
@@ -59,10 +59,7 @@ function initializeBoard () {
     for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
         othelloBoard[row] = {};
         for (let col = MIN_COL_INDEX; col < MAX_COL; col++ ) {
-            othelloBoard[row][col] = {};
             setBoardPiece(row, col, playerEnum.EMPTY);
-            // Number of pieces flipped.
-            setBoardScore(row, col, 0);
         }
     }
     // Initialize pieces in the center.
@@ -103,20 +100,12 @@ function checkAvailableMove (row, col) {
 
 // Getters
 function getBoardPiece (row, col) {
-    return othelloBoard[row][col]['piece'];
-}
-
-function getBoardScore (row, col) {
-    return othelloBoard[row][col]['score'];
+    return othelloBoard[row][col];
 }
 
 // Setters
 function setBoardPiece (row, col, piece) {
-    othelloBoard[row][col]['piece'] = piece;
-}
-
-function setBoardScore (row, col, score) {
-    othelloBoard[row][col]['score'] = score;
+    othelloBoard[row][col] = piece;
 }
 
 function setBoardEvaluationFunction (playerRole) {
@@ -124,7 +113,7 @@ function setBoardEvaluationFunction (playerRole) {
     for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++) {
         for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
             score = getNumberOfFlippedPieces(playerRole, row, col);
-            if (getNumberOfFlippedPieces(playerRole, row, col) > 0) {
+            if (score > 1 && getBoardPiece(row, col) !== playerRole) {
                 setBoardPiece(row, col, playerEnum.AVAILABLE);
             }
         }
@@ -145,27 +134,15 @@ function setAvailablePiecesToEmpty () {
 function flipPieces (playerRole, row, col) {
     for (let dirRow = -1; dirRow <= 1; dirRow++ ) {
         for (let dirCol = -1; dirCol <= 1; dirCol++ ) {
-            if (dirRow !== 0 || dirCol !== 0) {
-                flipPiecesByDirection(playerRole, row, col, dirRow, dirCol);
-            }
+            flipPiecesByDirection(playerRole, row, col, dirRow, dirCol);
         }
     }
 }
 
 function flipPiecesByDirection (playerRole, row, col, dirRow, dirCol) {
-    for (let distance = 0; ; distance++) {
+    for (let distance = 0; distance<getNumberOfFlippedPiecesByDirection(playerRole, row, col, dirRow, dirCol); distance++) {
         var posX = col + dirCol * (distance + 1);
         var posY = row + dirRow * (distance + 1);
-        if (isIndexOutBound(posX, posY)) {
-            break;
-        }
-        if (getBoardPiece(posY, posX) === playerEnum.EMPTY) {
-            break;
-        }
-        if (getBoardPiece(posY, posX) === playerRole) {
-            numberOfFlippedPieces = distance;
-            break;
-        }
         setBoardPiece(posY, posX, playerRole);
     }
 }
@@ -176,9 +153,7 @@ function getNumberOfFlippedPieces (playerRole, row, col) {
     var count = 0;
     for (let dirRow = -1; dirRow <= 1; dirRow++ ) {
         for (let dirCol = -1; dirCol <= 1; dirCol++ ) {
-            if (dirRow !== 0 || dirCol !== 0) {
-                count += getNumberOfFlippedPiecesByDirection(playerRole, row, col, dirRow, dirCol);
-            }
+            count += getNumberOfFlippedPiecesByDirection(playerRole, row, col, dirRow, dirCol);
         }
     }
     return count;
@@ -186,13 +161,13 @@ function getNumberOfFlippedPieces (playerRole, row, col) {
 
 function getNumberOfFlippedPiecesByDirection (playerRole, row, col, dirRow, dirCol) {
     var numberOfFlippedPieces = 0;
+    if(dirRow===0 && dirCol===0){
+        return 1;
+    }
     for (let score = 0; ; score++) {
         var posX = col + dirCol * (score + 1);
         var posY = row + dirRow * (score + 1);
-        if (isIndexOutBound(posX, posY)) {
-            break;
-        } 
-        if (getBoardPiece(posY, posX) === playerEnum.EMPTY || getBoardPiece(posY, posX) === playerEnum.AVAILABLE) {
+        if (isIndexOutBound(posX, posY) || getBoardPiece(posY, posX) === playerEnum.EMPTY || getBoardPiece(posY, posX) === playerEnum.AVAILABLE) {
             break;
         }
         if (getBoardPiece(posY, posX) === playerRole) {
@@ -231,6 +206,9 @@ function drawPieces () {
             } else if (getBoardPiece(row, col) === playerEnum.AVAILABLE) {
                 drawPieceByName(row, col, 'available-piece');
             }
+            else{
+                drawPieceByName(row, col, '')
+            }
         }
     }
 }
@@ -259,9 +237,9 @@ function isIndexOutBound (posX, posY) {
 }
 
 function convertIDToRow (id) {
-    return Math.ceil(id);
+    return Math.floor(id/MAX_ROW);
 }
 
 function convertIDToCol (id) {
-    return (id - Math.floor(convertIDToRow(id) / MAX_ROW));
+    return Math.floor(id - convertIDToRow(id)*MAX_ROW);
 }
