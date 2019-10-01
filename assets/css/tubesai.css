@@ -53,6 +53,38 @@
     text-align: center;
 }
 
+.hard-level {
+    margin-left: 10%;
+    cursor: pointer;
+    /* color: white; */
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
 body {
-    background-color: #000000;
+    background-color: #363636;
+    font-family: 'Roboto', sans-serif;
+}
+
+.flex {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+button {
+    border-radius: 10px;
+    background-color: #ffffff;
+    border: none;
+    width: 8rem;
+    height: 3rem;
+}
+
+button:hover {
+    background-color: #009067;
 }

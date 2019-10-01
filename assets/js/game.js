@@ -225,6 +225,7 @@ function drawEmptyBoard () {
         }
         html += '</div>';
     }
+    html += '<div class="hard-level"> <p> Hard level </p> </div>';
     html += '</div>';
     document.body.innerHTML = html;
 }

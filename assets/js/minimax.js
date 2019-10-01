@@ -113,7 +113,6 @@ function miniMax(node, depth, isMaximizing, alpha, beta){
 }
 
 function getBoardPieceMinMax (row, col, board) {
-
     return board[row][col];
 }
 
