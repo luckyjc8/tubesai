@@ -20,7 +20,6 @@ var othelloBoard = {};
 initializeGame();
 
 /* Function goes here */
-
 function initializeGame () {
     /* First turn: User as WHITE */
     initializeBoard();
@@ -32,6 +31,7 @@ function initializeGame () {
 // Get what element is clicked.
 window.onclick = e => {
     console.log(e.target.id);
+    console.log(othelloBoard);
     handleEventOnClick(e.target.id);
 }
 
@@ -161,7 +161,7 @@ function getNumberOfFlippedPieces (playerRole, row, col) {
 
 function getNumberOfFlippedPiecesByDirection (playerRole, row, col, dirRow, dirCol) {
     var numberOfFlippedPieces = 0;
-    if(dirRow===0 && dirCol===0){
+    if (dirRow === 0 && dirCol === 0){
         return 1;
     }
     for (let score = 0; ; score++) {
@@ -180,7 +180,6 @@ function getNumberOfFlippedPiecesByDirection (playerRole, row, col, dirRow, dirC
 
 /* VIEWS */
 // Drawing functions:
-
 // This function draws initial state of the board:
 function drawEmptyBoard () {
     var html = '<div class="container">';
@@ -205,8 +204,7 @@ function drawPieces () {
                 drawPieceByName(row, col, 'black-piece');
             } else if (getBoardPiece(row, col) === playerEnum.AVAILABLE) {
                 drawPieceByName(row, col, 'available-piece');
-            }
-            else{
+            } else {
                 drawPieceByName(row, col, '')
             }
         }
@@ -214,11 +212,11 @@ function drawPieces () {
 }
 
 function drawPieceByName (row, col, className) {
-    var div = document.createElement('div');
-    div.className = className;
     var id = convertToID(row, col);
     // Reset div element:
     document.getElementById(id).innerHTML = '';
+    var div = document.createElement('div');
+    div.className = className;
     // Then append new div element (WHITE, BLACK, AVAILABLE)
     document.getElementById(id).appendChild(div);
 }
@@ -229,11 +227,7 @@ function convertToID (row, col) {
 }
 
 function isIndexOutBound (posX, posY) {
-    if (posX < MIN_COL_INDEX || posY < MIN_ROW_INDEX || posX >= MAX_COL || posY >= MAX_ROW) {
-        return true;
-    } else {
-        return false;
-    }
+    return (posX < MIN_COL_INDEX || posY < MIN_ROW_INDEX || posX >= MAX_COL || posY >= MAX_ROW);
 }
 
 function convertIDToRow (id) {
@@ -242,4 +236,12 @@ function convertIDToRow (id) {
 
 function convertIDToCol (id) {
     return Math.floor(id - convertIDToRow(id)*MAX_ROW);
+}
+
+function getIDFromAvailableDiv (id) {
+    return parseInt(id.replace('child' , ''));
+}
+
+function isDivAvailable (id) {
+    return (id.substring(0, 5) === 'child');
 }
