@@ -33,12 +33,12 @@
 }
 
 .available-piece {
-    height: 60px;
-    width: 60px;
-    background-color: #009067;
+    height: 5px;
+    width: 5px;
+    background-color: red;
     border-radius: 50px;
     border: 1px solid black;
-    margin: 5px 5px;
+    margin: 30px 30px;
 }
 
 .othello-row {
@@ -54,6 +54,19 @@
 }
 
 .hard-level {
+    margin-left: 10%;
+    cursor: pointer;
+    /* color: white; */
+}
+
+.botVSbot {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    color: white;
+}
+
+.mode {
     margin-left: 10%;
     cursor: pointer;
     /* color: white; */
@@ -87,4 +100,16 @@ button {
 
 button:hover {
     background-color: #009067;
+}
+
+#level {
+    font-size: 1rem;
+}
+
+#mode {
+    font-size: 1rem;
+}
+
+#bot-bot {
+    cursor: pointer;
 }

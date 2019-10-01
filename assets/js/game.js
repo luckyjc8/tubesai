@@ -26,6 +26,8 @@ initializeGame();
 /* Function goes here */
 function initializeGame () {
     /* First turn: User as WHITE */
+    document.getElementById('black-score').innerHTML = 2;
+    document.getElementById('white-score').innerHTML = 2;
     initializeBoard();
     setAvailablePieces(playerRole);
     drawEmptyBoard();
@@ -35,6 +37,33 @@ function initializeGame () {
 // Get what element is clicked.
 window.onclick = e => {
     console.log(e.target.id);
+    if (e.target.id === 'level') {
+        RANDOM = false;
+        if (document.getElementById('level').innerHTML === 'Easy level') {
+            document.getElementById('level').innerHTML = 'Hard level';
+            DEPTH = 4;
+        } else {
+            document.getElementById('level').innerHTML = 'Easy level';
+            DEPTH = 2;
+        }
+        initializeGame();
+    } else if (e.target.id === 'mode') {
+        RANDOM = false;
+        if (document.getElementById('mode').innerHTML === 'Mode: Random') {
+            document.getElementById('mode').innerHTML = 'Mode: AI';
+            RANDOMBOT = false;
+        } else {
+            document.getElementById('mode').innerHTML = 'Mode: Random';
+            RANDOMBOT= true;
+        }
+        initializeGame();
+    } else if (e.target.id === 'bot-bot') {
+        RANDOM = true;
+        RANDOMBOT = false;
+        DEPTH = 3;
+        alert('Click everywhere ON THE SCREEN TO MAKE BOT MOVES.');
+        initializeGame();
+    }
     handleEventOnClick(e.target.id);
 }
 
@@ -83,8 +112,10 @@ function handleEventOnClick (elementID) {
                 // Render View
                 setAvailablePieces(playerRole);
                 drawPieces();
-            }, 1000);
-            
+                document.getElementById('black-score').innerHTML = showScore(othelloBoard, playerEnum.BLACK);
+                document.getElementById('white-score').innerHTML = showScore(othelloBoard, playerEnum.WHITE);
+            }, 100);
+        
         }
     }
 }
@@ -112,6 +143,18 @@ function changePlayerRole () {
 }
 
 function evaluationFunction (othelloBoard) {
+    var scoreTemp = 0;
+    for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
+        for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
+            if (othelloBoard[row][col] === playerRole) {
+                scoreTemp++;
+            }
+        }
+    }
+    return scoreTemp;
+}
+
+function showScore (othelloBoard, playerRole) {
     var scoreTemp = 0;
     for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
         for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
@@ -220,7 +263,7 @@ function getNumberOfFlippedPiecesByDirection (playerRole, row, col, dirRow, dirC
 // Drawing functions:
 // This function draws initial state of the board:
 function drawEmptyBoard () {
-    var html = '<div class="container">';
+    var html = '';
     for ( let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
         html += '<div class="othello-row">';
         for (let col = MIN_COL_INDEX; col < MAX_COL; col++ ) {
@@ -229,9 +272,7 @@ function drawEmptyBoard () {
         }
         html += '</div>';
     }
-    html += '<div class="hard-level"> <p> Hard level </p> </div>';
-    html += '</div>';
-    document.body.innerHTML = html;
+    document.querySelector('.othello-game').innerHTML = html;
 }
 
 function drawPieces () {

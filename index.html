@@ -2,8 +2,34 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="assets/css/tubesai.css" rel="stylesheet"type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="flex">
+        <div class="container">
+            <div class="title">
+                <div class="title-content">
+                    <p> Black </p>
+                    <h2 id="black-score"> 2 </h2>
+                </div>
+                <div class="hard-level">
+                    <button id="level"> Easy level </button>
+                </div>
+                <div class="mode">
+                    <button id="mode"> Mode: AI </button>
+                </div>
+                <div class="title-content" style="margin-left: 10%">
+                    <p> White </p>
+                    <h2 id="white-score"> 2 </h2>
+                </div>
+            </div>
+            <div class="othello-game">
+            </div>
+        </div>
+    </div>
+    <div class="botVSbot">
+        <p id="bot-bot"> Random vs AI? Click here </p>
+    </div>
     <script src="assets/js/game.js"></script>
     <script src="assets/js/minimax.js"></script>
 </body>
