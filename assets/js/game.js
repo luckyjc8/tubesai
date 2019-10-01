@@ -25,8 +25,6 @@ function initializeGame () {
     /* First turn: User as WHITE */
     initializeBoard();
     setBoardEvaluationFunction(playerRole);
-    // console.log(othelloBoard);
-    // console.log(getNumberOfFlippedPieces(playerRole, 3, 6));
     drawEmptyBoard();
     drawPieces();
 }
@@ -103,6 +101,15 @@ function checkAvailableMove (row, col) {
     return (getBoardPiece(row, col) === playerEnum.AVAILABLE);
 }
 
+// Getters
+function getBoardPiece (row, col) {
+    return othelloBoard[row][col]['piece'];
+}
+
+function getBoardScore (row, col) {
+    return othelloBoard[row][col]['score'];
+}
+
 // Setters
 function setBoardPiece (row, col, piece) {
     othelloBoard[row][col]['piece'] = piece;
@@ -114,19 +121,9 @@ function setBoardScore (row, col, score) {
 
 function setBoardEvaluationFunction (playerRole) {
     var score = 0;
-    console.log('playerRole____: ', playerRole);
-    console.log('score:::: ', getNumberOfFlippedPieces(playerRole, 3, 6));
-    console.log(playerRole);
-    for (var row = MIN_ROW_INDEX; row < MAX_ROW; row++) {
-        for (var col = MIN_COL_INDEX; col < MAX_COL; col++) {
-            console.log(playerRole);
+    for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++) {
+        for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
             score = getNumberOfFlippedPieces(playerRole, row, col);
-            // console.log('score: ', score);
-            // console.log(getNumberOfFlippedPieces(playerRole, row, col));
-            // setBoardScore(row, col, score);
-            if (row === 3 && col === 6) {
-                console.log('score: ', score);
-            }
             if (getNumberOfFlippedPieces(playerRole, row, col) > 0) {
                 setBoardPiece(row, col, playerEnum.AVAILABLE);
             }
@@ -173,14 +170,6 @@ function flipPiecesByDirection (playerRole, row, col, dirRow, dirCol) {
     }
 }
 
-// Getters
-function getBoardPiece (row, col) {
-    return othelloBoard[row][col]['piece'];
-}
-
-function getBoardScore (row, col) {
-    return othelloBoard[row][col]['score'];
-}
 
 // playerRole = WHITE, BLACK
 function getNumberOfFlippedPieces (playerRole, row, col) {
@@ -188,9 +177,7 @@ function getNumberOfFlippedPieces (playerRole, row, col) {
     for (let dirRow = -1; dirRow <= 1; dirRow++ ) {
         for (let dirCol = -1; dirCol <= 1; dirCol++ ) {
             if (dirRow !== 0 || dirCol !== 0) {
-                // console.log('dirRow, dirCol ', dirRow, dirCol);
                 count += getNumberOfFlippedPiecesByDirection(playerRole, row, col, dirRow, dirCol);
-                console.log(row, col, dirRow, dirCol);
             }
         }
     }
@@ -205,37 +192,15 @@ function getNumberOfFlippedPiecesByDirection (playerRole, row, col, dirRow, dirC
         if (isIndexOutBound(posX, posY)) {
             break;
         } 
-        if (getBoardPiece(posY, posX) === playerEnum.EMPTY) {
+        if (getBoardPiece(posY, posX) === playerEnum.EMPTY || getBoardPiece(posY, posX) === playerEnum.AVAILABLE) {
             break;
         }
         if (getBoardPiece(posY, posX) === playerRole) {
             numberOfFlippedPieces = score;
             break;
         }
-        // console.log('score: ', score);
     }
     return numberOfFlippedPieces;
-}
-
-// Utils for rendering to frontend.
-function convertToID (row, col) {
-    return (row - MIN_ROW_INDEX) * MAX_ROW + col;
-}
-
-function isIndexOutBound (posX, posY) {
-    if (posX < MIN_COL_INDEX || posY < MIN_ROW_INDEX || posX >= MAX_COL || posY >= MAX_ROW) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-function convertIDToRow (id) {
-    return Math.ceil(id);
-}
-
-function convertIDToCol (id) {
-    return (id - Math.floor(convertIDToRow(id) / MAX_ROW));
 }
 
 /* VIEWS */
@@ -254,7 +219,6 @@ function drawEmptyBoard () {
     }
     html += '</div>';
     document.body.innerHTML = html;
-    // console.log(html);
 }
 
 function drawPieces () {
@@ -279,4 +243,25 @@ function drawPieceByName (row, col, className) {
     document.getElementById(id).innerHTML = '';
     // Then append new div element (WHITE, BLACK, AVAILABLE)
     document.getElementById(id).appendChild(div);
+}
+
+// Utils for rendering to frontend.
+function convertToID (row, col) {
+    return (row - MIN_ROW_INDEX) * MAX_ROW + col;
+}
+
+function isIndexOutBound (posX, posY) {
+    if (posX < MIN_COL_INDEX || posY < MIN_ROW_INDEX || posX >= MAX_COL || posY >= MAX_ROW) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function convertIDToRow (id) {
+    return Math.ceil(id);
+}
+
+function convertIDToCol (id) {
+    return (id - Math.floor(convertIDToRow(id) / MAX_ROW));
 }

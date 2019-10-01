@@ -10,7 +10,6 @@ function drawEmptyBoard () {
     }
     html += '</div>';
     document.body.innerHTML = html;
-    console.log(html);
 }
 
 drawEmptyBoard();
