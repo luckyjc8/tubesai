@@ -14,7 +14,8 @@ var playerEnum = {
 
 var blackScore = 2;
 var whiteScore = 2;
-var playerRole = playerEnum.BLACK;
+var playerStart = playerEnum.WHITE;
+var playerRole = playerStart;
 var othelloBoard = {};
 
 /* Main program */
@@ -24,6 +25,7 @@ initializeGame();
 function initializeGame () {
     /* First turn: User as WHITE */
     initializeBoard();
+    setAvailablePieces(playerRole);
     drawEmptyBoard();
     drawPieces();
 }
@@ -84,11 +86,11 @@ function changePlayerRole () {
     }
 }
 
-function evaluateScore (playerRole) {
+evaluationFunction = function (othelloBoard) {
     var scoreTemp = 0;
     for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
         for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
-            if (getBoardPiece(row, col) === playerRole) {
+            if (othelloBoard[row][col] === playerRole) {
                 scoreTemp++;
             }
         }
