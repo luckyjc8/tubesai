@@ -16,12 +16,17 @@ var whiteScore = 2;
 var playerRole = playerEnum.WHITE;
 var othelloBoard = {};
 
+/* Main program */
+initializeGame();
+
 /* Function goes here */
 
 function initializeGame () {
     /* First turn: User as WHITE */
     initializeBoard();
-    setAllAvailableMoves(playerRole);
+    // setBoardEvaluationFunction(playerRole);
+    // console.log(othelloBoard);
+    console.log(getNumberOfFlippedPieces(playerRole, 3, 6));
     drawEmptyBoard();
     drawPieces();
 }
@@ -33,16 +38,20 @@ window.onclick = e => {
 }
 
 /* When player click on row. */
-function handleEventOnClick (id) {
-    if (id >= MIN_ROW_INDEX + 1  && id <= MAX_ROW * MAX_COL) {
-        let row = convertIDToRow(row);
-        let col = convertIDToCol(col);
+function handleEventOnClick (elementID) {
+    if (elementID >= MIN_ROW_INDEX + 1  && elementID <= MAX_ROW * MAX_COL) {
+        let row = convertIDToRow(elementID);
+        let col = convertIDToCol(elementID);
+        // Check if available(row, col) is clicked.
         if (checkAvailableMove(row, col)) {
+            setAvailablePiecesToEmpty();
+            // Proceed to change WHITE to BLACK or vice versa.
             flipPieces(playerRole, row, col);
-            drawPieces();
             updateScore();
             changePlayerRole();
-            setAllAvailableMoves(playerRole);
+            // Render View
+            drawPieces();
+            setBoardEvaluationFunction(playerRole);
         }
     }
 }
@@ -53,16 +62,16 @@ function initializeBoard () {
         othelloBoard[row] = {};
         for (let col = MIN_COL_INDEX; col < MAX_COL; col++ ) {
             othelloBoard[row][col] = {};
-            othelloBoard[row][col]['piece'] = playerEnum.EMPTY;
+            setBoardPiece(row, col, playerEnum.EMPTY);
             // Number of pieces flipped.
-            othelloBoard[row][col]['score'] = 0;
+            setBoardScore(row, col, 0);
         }
     }
     // Initialize pieces in the center.
-    othelloBoard[3][3]['piece'] = playerEnum.WHITE;
-    othelloBoard[3][4]['piece'] = playerEnum.BLACK;
-    othelloBoard[4][3]['piece'] = playerEnum.BLACK;
-    othelloBoard[4][4]['piece'] = playerEnum.WHITE;
+    setBoardPiece(3, 3, playerEnum.WHITE);
+    setBoardPiece(3, 4, playerEnum.BLACK);
+    setBoardPiece(4, 3, playerEnum.BLACK);
+    setBoardPiece(4, 4, playerEnum.WHITE);
 }
 
 function changePlayerRole () {
@@ -103,13 +112,24 @@ function setBoardScore (row, col, score) {
     othelloBoard[row][col]['score'] = score;
 }
 
-function setAllAvailableMoves (playerRole) {
+function setBoardEvaluationFunction (playerRole) {
+    console.log('playerRole____: ', playerRole);
     for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++) {
         for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
-            score = getNumberOfFlippedPieces(playerRole, row, col);
-            setBoardScore(row, col, score);
+            var score = getNumberOfFlippedPieces(playerRole, row, col);
+            // setBoardScore(row, col, score);
             if (score > 0) {
                 setBoardPiece(row, col, playerEnum.AVAILABLE);
+            }
+        }
+    }
+}
+
+function setAvailablePiecesToEmpty () {
+    for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++) {
+        for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
+            if (getBoardPiece(row, col) === playerEnum.AVAILABLE) {
+                setBoardPiece(row, col, playerEnum.EMPTY);
             }
         }
     }
@@ -119,7 +139,9 @@ function setAllAvailableMoves (playerRole) {
 function flipPieces (playerRole, row, col) {
     for (let dirRow = -1; dirRow <= 1; dirRow++ ) {
         for (let dirCol = -1; dirCol <= 1; dirCol++ ) {
-            flipPiecesByDirection(playerRole, row, col, dirRow, dirCol);
+            if (dirRow !== 0 || dirCol !== 0) {
+                flipPiecesByDirection(playerRole, row, col, dirRow, dirCol);
+            }
         }
     }
 }
@@ -128,13 +150,10 @@ function flipPiecesByDirection (playerRole, row, col, dirRow, dirCol) {
     for (let distance = 0; ; distance++) {
         var posX = col + dirCol * (distance + 1);
         var posY = row + dirRow * (distance + 1);
+        if (isIndexOutBound(posX, posY)) {
+            break;
+        }
         if (getBoardPiece(posY, posX) === playerEnum.EMPTY) {
-            break;
-        }
-        if (posX < MIN_COL_INDEX || posY < MIN_ROW_INDEX) {
-            break;
-        }
-        if (posX > MAX_COL || posY > MAX_ROW) {
             break;
         }
         if (getBoardPiece(posY, posX) === playerRole) {
@@ -159,7 +178,10 @@ function getNumberOfFlippedPieces (playerRole, row, col) {
     var count = 0;
     for (let dirRow = -1; dirRow <= 1; dirRow++ ) {
         for (let dirCol = -1; dirCol <= 1; dirCol++ ) {
-            count += getNumberOfFlippedPiecesByDirection(playerRole, row, col, dirRow, dirCol);
+            if (dirRow !== 0 || dirCol !== 0) {
+                console.log('dirRow, dirCol ', dirRow, dirCol);
+                count += getNumberOfFlippedPiecesByDirection(playerRole, row, col, dirRow, dirCol);
+            }
         }
     }
     return count;
@@ -167,22 +189,20 @@ function getNumberOfFlippedPieces (playerRole, row, col) {
 
 function getNumberOfFlippedPiecesByDirection (playerRole, row, col, dirRow, dirCol) {
     var numberOfFlippedPieces = 0;
-    for (let distance = 0; ; distance++) {
-        var posX = col + dirCol * (distance + 1);
-        var posY = row + dirRow * (distance + 1);
+    for (let score = 0; ; score++) {
+        var posX = col + dirCol * (score + 1);
+        var posY = row + dirRow * (score + 1);
+        if (isIndexOutBound(posX, posY)) {
+            break;
+        } 
         if (getBoardPiece(posY, posX) === playerEnum.EMPTY) {
             break;
         }
-        if (posX < MIN_COL_INDEX || posY < MIN_ROW_INDEX) {
-            break;
-        }
-        if (posX > MAX_COL || posY > MAX_ROW) {
-            break;
-        }
         if (getBoardPiece(posY, posX) === playerRole) {
-            numberOfFlippedPieces = distance;
+            numberOfFlippedPieces = score;
             break;
         }
+        // console.log('score: ', score);
     }
     return numberOfFlippedPieces;
 }
@@ -192,30 +212,39 @@ function convertToID (row, col) {
     return (row - MIN_ROW_INDEX) * MAX_ROW + col;
 }
 
+function isIndexOutBound (posX, posY) {
+    if (posX < MIN_COL_INDEX || posY < MIN_ROW_INDEX || posX >= MAX_COL || posY >= MAX_ROW) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function convertIDToRow (id) {
     return Math.ceil(id);
 }
 
-function convertToCol (id) {
+function convertIDToCol (id) {
     return (id - Math.floor(convertIDToRow(id) / MAX_ROW));
 }
 
 /* VIEWS */
+// Drawing functions:
 
-// Drawing function
+// This function draws initial state of the board:
 function drawEmptyBoard () {
     var html = '<div class="container">';
     for ( let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
         html += '<div class="othello-row">';
         for (let col = MIN_COL_INDEX; col < MAX_COL; col++ ) {
-            html += '<div id= ' + (row * MAX_ROW + col + 1) + ' class="square">';
+            html += '<div id= ' + (row * MAX_ROW + col) + ' class="square">';
             html += '</div>';
         }
         html += '</div>';
     }
     html += '</div>';
     document.body.innerHTML = html;
-    console.log(html);
+    // console.log(html);
 }
 
 function drawPieces () {
@@ -236,5 +265,8 @@ function drawPieceByName (row, col, className) {
     var div = document.createElement('div');
     div.className = className;
     var id = convertToID(row, col);
+    // Reset div element:
+    document.getElementById(id).innerHTML = '';
+    // Then append new div element (WHITE, BLACK, AVAILABLE)
     document.getElementById(id).appendChild(div);
 }
