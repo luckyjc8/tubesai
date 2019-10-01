@@ -4,8 +4,8 @@ var MAX_COL = 8;
 var MIN_ROW_INDEX = 0;
 var MIN_COL_INDEX = 0;
 var DEPTH = 2;
-var RANDOM = true;
-var RANDOMBOT = true;
+var RANDOM = false;
+var RANDOMBOT = false;
 
 var playerEnum = {
     BLACK: 1,
@@ -64,11 +64,13 @@ function handleEventOnClick (elementID) {
             giveValueToLeaves(rootNode, evaluationFunction);
             miniMax(rootNode, DEPTH, true, -Infinity, Infinity);
             // AI chooses this move:
+            if (RANDOMBOT){
+                var nextRandomNode = Math.floor((Math.random() * rootNode.childNodes.length));
+            }
             for (let row = MIN_ROW_INDEX; row < MAX_ROW; row++ ) {
                 for (let col = MIN_COL_INDEX; col < MAX_COL; col++) {
                     if (RANDOMBOT) {
-                        // console.log(rootNode);
-                        othelloBoard[row][col]= rootNode.childNodes[Math.floor((Math.random() * rootNode.childNodes.length))].boardState[row][col];
+                        othelloBoard[row][col]= rootNode.childNodes[nextRandomNode].boardState[row][col];
                     } else {
                         othelloBoard[row][col] = rootNode.childNodes[rootNode.bestNextNode].boardState[row][col];
                     }
